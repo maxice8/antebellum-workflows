@@ -1,0 +1,87 @@
+name: release-submod
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      mod:
+        required: true
+        type: string
+
+jobs:
+  # Build the zip-file and upload it as an artifact for later stages
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Zip Europa Universalis IV mod
+        uses: maxice8/eu4-mod-zip@v0.0.1
+        with:
+          mod-name: ${{ inputs.mod }}
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.mod }}
+          path: ${{ steps.zip.outputs.zip-path }}
+
+  # Create a release by:
+  # Storing the current date and short hash of the HEAD commit
+  # Tagging a commit
+  # Downloading the uploading zip-file
+  # Creating a release with the associated zip-file as an asset
+  release:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Store current Date
+        id: date
+        run: echo "date=$(date --utc +'%Y/%m/%m-%H.%M.%S')" >> $GITHUB_OUTPUT
+
+      - name: Store current git shorthash
+        id: hash
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: tag commit
+        uses: tvdias/github-tagger@v0.0.2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: ${{ steps.hash.outputs.sha }}-${{ steps.date.outputs.date }}
+
+      - name: Download
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.mod }}
+      
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ inputs.mod }}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.date.outputs.date }}-${{ steps.hash.outputs.sha }}
+    
+  # Remove old releases, keeping the latest 3 most recent ones
+  remove:
+    needs: release
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Delete Older Releases
+        uses: dev-drprasad/delete-older-releases@v0.2.1
+
+        with:
+          keep_latest: 3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
