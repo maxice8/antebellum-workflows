@@ -53,7 +53,7 @@ jobs:
         uses: tvdias/github-tagger@v0.0.2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          tag: ${{ steps.date.outputs.date }}-${{ steps.hash.outputs.sha}}
+          tag: ${{ steps.date.outputs.date }}-${{ steps.hash.outputs.sha }}
 
       - name: Download
         id: download
