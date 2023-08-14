@@ -45,15 +45,11 @@ jobs:
         id: date
         run: echo "date=$(date --utc +'%Y/%m/%m-%H.%M.%S')" >> $GITHUB_OUTPUT
 
-      - name: Store current git shorthash
-        id: hash
-        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: tag commit
         uses: tvdias/github-tagger@v0.0.2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          tag: ${{ steps.hash.outputs.sha }}-${{ steps.date.outputs.date }}
+          tag: ${{ steps.date.outputs.date }}-${{ github.sha }}
 
       - name: Download
         id: download
