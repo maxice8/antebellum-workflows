@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Zip Europa Universalis IV mod
         id: zip
-        uses: maxice8/eu4-mod-zip@v0.0.2
+        uses: maxice8/eu4-mod-zip@v0.0.3
         with:
           mod-name: ${{ inputs.mod-name }}
 
