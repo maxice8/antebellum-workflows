@@ -77,12 +77,12 @@ jobs:
         id: download
         uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.mod }}
+          name: ${{ inputs.mod-name }}
       
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ inputs.mod }}.zip
+          files: ${{ inputs.mod-name }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.date.outputs.date }}-${{ steps.hash.outputs.sha }}
     
