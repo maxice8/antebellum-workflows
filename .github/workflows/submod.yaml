@@ -5,9 +5,10 @@ run-name: Create zip and release of ${{ inputs.mod }}
 on:
   workflow_call:
     inputs:
-      mod:
-        required: true
+      mod-name:
+        required: false
         type: string
+
 
 jobs:
   # Build the zip-file and upload it as an artifact for later stages
@@ -18,7 +19,8 @@ jobs:
         id: zip
         uses: maxice8/eu4-mod-zip@v0.0.2
         with:
-          mod-name: ${{ inputs.mod }}
+          mod-name: ${{ inputs.mod-name }}
+
 
       - name: Upload
         uses: actions/upload-artifact@v3
