@@ -6,8 +6,20 @@ on:
   workflow_call:
     inputs:
       mod-name:
+        required: true
+        type: string
+      prefix-name:
         required: false
         type: string
+        default: ''
+      zip-name:
+        required: false
+        type: string
+        default: ''
+      descriptor-name:
+        required: false
+        type: string
+        default: ''
 
 
 jobs:
@@ -20,12 +32,15 @@ jobs:
         uses: maxice8/eu4-mod-zip@v0.0.3
         with:
           mod-name: ${{ inputs.mod-name }}
+          zip-name: ${{ inputs.zip-name }}
+          prefix-name: ${{ inputs.prefix-name }}
+          descriptor-name: ${{ inputs.descriptor-name }}
 
 
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.mod }}
+          name: ${{ inputs.mod-name }}
           path: ${{ steps.zip.outputs.zip-path }}
 
   # Create a release by:
