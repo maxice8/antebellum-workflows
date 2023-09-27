@@ -78,6 +78,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.mod-name }}
+          retention-days: 1 # Fallback
       
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -85,6 +86,11 @@ jobs:
           files: ${{ inputs.mod-name }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.date.outputs.date }}-${{ steps.hash.outputs.sha }}
+
+      - name: cleanup-artifacts
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: '*'
     
   # Remove old releases, keeping the latest 3 most recent ones
   remove:
